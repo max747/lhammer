@@ -1,0 +1,21 @@
+douban-backup
+CopyRight (C) 2009 Chen Zheng <nkchenz@gmail.com> 
+Distributed under terms of GPL v2
+
+git://github.com/nkchenz/douban-backup.git
+http://code.google.com/p/douban-backup/
+
+
+Howto
+
+    python dbb.py --user yourname --item books > yourname.books.xml
+
+item can be following:
+    doulists, books, movies, musics, groups, friends, recs, saying
+
+backup books and movies:
+    python dbb.py --user yourname --item books,movies > yourname.bm.xml
+
+use 'all' if you want to backup them all:
+    python dbb.py --user yourname --item all > yourname.xml
+
