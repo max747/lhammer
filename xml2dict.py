@@ -20,9 +20,14 @@ class XML2Dict:
         if isinstance(value, str):
             value = value.strip() # Only strip strings 
         tree.value = value
+
         # Save attributes
+        attrs = {}
         for k,v in node.attrib.items():
-            tree.update(self._make_dict(k, v))
+            attrs.update(self._make_dict(k, v))
+        if attrs:
+            tree['attrs'] = attrs
+
         #Save childrens
         for child in node.getchildren():
             ctag = child.tag
