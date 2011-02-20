@@ -80,7 +80,18 @@ class DoubanCrawler:
         """Get all photos of an album"""
         url = self._get_url('photos/album', album)
         #title = self._extract(self.PATTERNS['title'], url)
-        return self._extract(self.PATTERNS['photo'], url)
+        return self._extract_multi_pages(self.PATTERNS['photo'], url)
+
+    def _extract_multi_pages(self, pattern, url):
+        start = 0
+        data = []
+        while True:
+            page = self._extract(pattern, url, start)
+            if not page:
+                break # No more data avaiable 
+            data += page
+            start += len(page)
+        return data
 
     def _extract(self, pattern, url, start = 0):
         """How to get page_size?"""
