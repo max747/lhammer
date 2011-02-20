@@ -5,7 +5,6 @@ import os
 import sys
 
 import douban
-douban.verbose = True
 
 if len(sys.argv) < 2:
     print 'Usage: %s album_id' % sys.argv[0]
@@ -20,15 +19,20 @@ if not os.path.exists(album):
     os.mkdir(album)
 
 photos = db.get_album_photos(album)
-print len(photos), 'photos'
+total = len(photos)
+print total, 'photos'
+n = 1
 for p in photos:
     url = p.thumb.replace('thumb', 'photo')
     local_file = os.path.join(album, os.path.basename(url))
     if os.path.exists(local_file):
         continue
 
-    print url
+    print '%d/%d' % (n, total) , local_file
+    img = douban.download(url)
     fp = open(local_file, 'w')
-    fp.write(douban.download(url))
+    fp.write(img)
     fp.close()
+
+    n += 1
 print 'done'
