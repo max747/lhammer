@@ -13,8 +13,10 @@ import re
 
 from oodict import OODict
 
+verbose = False
 def debug(msg):
-    print msg
+    if verbose:
+        print msg
 
 def download(url):
     time.sleep(0.5) # Be nice if you don't want to be baned by douban.com
@@ -39,6 +41,7 @@ class DoubanCrawler:
             ['id', 'cover', 'desc']),
             
         'photo': ('/photos/photo/([0-9]+)/".*?src="(.*?)"' , ['id', 'thumb']),
+        'title': ('<title>(.*?)</title>', ['title']),
         }
 
         """
@@ -51,7 +54,6 @@ class DoubanCrawler:
         'saying': '<li class="mbtr">(.*?)</li>',
 #'rec': '<li class="mbtr">(.*?)</li>',
         'rec': '<li .*?(推荐.*?回应)',
-        'title':  '<title>(.*?)</title>',
         'doulist_desc': '<div class="indent">(.*?)</div>', # For the description of doulist,
         'total':  '共(.*?)个条目',
         """
@@ -77,6 +79,7 @@ class DoubanCrawler:
     def get_album_photos(self, album):
         """Get all photos of an album"""
         url = self._get_url('photos/album', album)
+        #title = self._extract(self.PATTERNS['title'], url)
         return self._extract(self.PATTERNS['photo'], url)
 
     def _extract(self, pattern, url, start = 0):
@@ -95,8 +98,14 @@ class DoubanCrawler:
         matches = re.findall(pattern[0], page.replace('\n', ''))
         if not matches:
             return None
+
         # Change the matching results to meaningful fields
         for m in matches:
+            # m is supposed to be a tuple, so is pattern[1] which is supposed
+            # to a list
+            if not isinstance(m, tuple):
+                m = [m.strip()]
+
             entry = OODict()
             for k, v in zip(pattern[1], m):
                 entry[k] =  v
