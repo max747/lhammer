@@ -76,11 +76,19 @@ class DoubanCrawler:
         url = self._get_url('people', user, 'photos')
         return self._extract(self.PATTERNS['album'], url)
 
+    def _get_title(self, url):
+        return self._extract(self.PATTERNS['title'], url)[0]['title']
+
     def get_album_photos(self, album):
-        """Get all photos of an album"""
-        url = self._get_url('photos/album', album)
-        #title = self._extract(self.PATTERNS['title'], url)
-        return self._extract_multi_pages(self.PATTERNS['photo'], url)
+        """Get all photos of an album
+        
+        Return: dict(url, title, photos)
+        """
+        data = OODict()
+        data.url = self._get_url('photos/album', album)
+        data.title = self._get_title(data.url)
+        data.photos =  self._extract_multi_pages(self.PATTERNS['photo'], data.url)
+        return data
 
     def _extract_multi_pages(self, pattern, url):
         start = 0

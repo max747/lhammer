@@ -9,22 +9,24 @@ import douban
 if len(sys.argv) < 2:
     print 'Usage: %s album_id' % sys.argv[0]
     print '    http://www.douban.com/photos/album/$album_id/'
+    print 'Will create a folder under "albums" by default'
     sys.exit(-1)
 
 db = douban.DoubanCrawler()
 album = sys.argv[1]
+data = db.get_album_photos(album)
 
-if not os.path.exists(album):
-    print 'Creating local album folder', album
-    os.mkdir(album)
+root = os.path.join('albums', '%s-%s' % (album, data.title))
+if not os.path.exists(root):
+    print 'Creating local album folder', root
+    os.makedirs(root)
 
-photos = db.get_album_photos(album)
-total = len(photos)
+total = len(data.photos)
 print total, 'photos'
 n = 1
-for p in photos:
+for p in data.photos:
     url = p.thumb.replace('thumb', 'photo')
-    local_file = os.path.join(album, os.path.basename(url))
+    local_file = os.path.join(root, os.path.basename(url))
     if os.path.exists(local_file):
         continue
 
