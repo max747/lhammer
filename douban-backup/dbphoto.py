@@ -23,8 +23,9 @@ if not os.path.exists(root):
 
 total = len(data.photos)
 print total, 'photos'
-n = 1
+n = 0
 for p in data.photos:
+    n +=1
     url = p.thumb.replace('thumb', 'photo')
     local_file = os.path.join(root, os.path.basename(url))
     if os.path.exists(local_file):
@@ -36,5 +37,4 @@ for p in data.photos:
     fp.write(img)
     fp.close()
 
-    n += 1
 print 'done'

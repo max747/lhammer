@@ -19,7 +19,7 @@ def debug(msg):
         print msg
 
 def download(url):
-    time.sleep(0.5) # Be nice if you don't want to be baned by douban.com
+    time.sleep(1) # Be nice if you don't want to be baned by douban.com
     debug(url)
     try:
         return urllib2.urlopen(url).read()
