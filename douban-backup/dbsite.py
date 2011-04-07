@@ -1,8 +1,18 @@
 #!/usr/bin/python
 # coding: utf-8
 
+"""
+The structure of site.douban:
+
+    site -> room -> column -> article
+
+    site -> 日记 -> note
+
+"""
+
 import re
 import mechanize
+from pyquery import PyQuery as pq
 
 import oodict
 
@@ -37,29 +47,44 @@ def multipage(fp):
         return data
     return foobar
 
-def get_articles(room):
+def get_columns(room):
     br = mechanize.Browser()
     br.open(room)
     return list(br.links(url_regex="\/widget\/articles\/[0-9]+\/$"))
 
 @multipage
-def get_notes(article):
+def get_articles(column):
     br = mechanize.Browser()
-    br.open(article)
+    br.open(column)
     return list(br.links(url_regex="\/article\/[0-9]+\/$"))
+
+def get_content(article):
+    html = pq(url = article)
+    c = html('.book-content')
+    txt = c.text()
+    txt = txt.encode('utf8')
+    fp = open('a.txt', 'w+')
+    fp.write(txt)
+    fp.close()
+
+article = 'http://site.douban.com/widget/articles/11971/article/12191447/'
+article = 'http://site.douban.com/widget/articles/11971/article/11138094/'
+get_content(article)
+
+"""
 
 for room in site.rooms:
     print 'ROOM', room.text, room.url
-    for article in get_articles(room.url):
-        br.follow_link(article)
+    for column in get_columns(room.url):
+        br.follow_link(column)
         title = br.title().replace('(豆瓣)', '')
-        print title, article.url
+        print title, column.url
         br.back()
 
-        for note in get_notes(article.url):
-            print note.text, note.url
+        for article in get_articles(column.url):
+            print article.text, article.url
+    break
 
-"""
 room = 'http://site.douban.com/106369/room/1532/'
 get_articles(room)
 
