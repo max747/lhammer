@@ -11,6 +11,12 @@ The structure of site.douban:
 Requires:
     pyquery, mechanize, pandoc
 
+
+TODO:
+    incremental indexing
+    syncing
+    nice robots.txt handling
+
 """
 
 import re
@@ -109,7 +115,10 @@ def sync_room(room, d):
             if os.path.exists(article_path):
                 continue # Already exists, no need to download again FIXME: there maybe changes
             print article.text, article.url
-            sync_article(article.url, article_path)
+            try:
+                sync_article(article.url, article_path)
+            except:
+                pass
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
