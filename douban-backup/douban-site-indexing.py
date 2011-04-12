@@ -8,13 +8,9 @@ The structure of site.douban:
 
 TODO:
     incremental indexing
-    nice robots.txt handling
 """
 
-import re
 import mechanize
-from pyquery import PyQuery as pq
-import codecs
 import os
 import sys
 import time
@@ -51,14 +47,6 @@ class DoubanSite:
         self.title  = urlopen(self.url).title()
         self.rooms = {}
 
-    def _convert_format(self, links):
-        l = []
-        for link in links:
-            if link.text in ['展开', '[IMG]']:
-                continue
-            l.append(OODict({'name': link.text, 'url': link.url}))
-        return l
-
     def get_columns(self, room_url):
         br = urlopen(room_url)
         columns = []
@@ -73,8 +61,13 @@ class DoubanSite:
     @multipage
     def get_articles(self, column_url):
         br = urlopen(column_url)
-        return self._convert_format(list(br.links(url_regex="\/article\/[0-9]+\/$")) + \
-               list(br.links(url_regex="\/note\/[0-9]+\/$")))
+        articles = []
+        for link in list(br.links(url_regex="\/article\/[0-9]+\/$")) + \
+                list(br.links(url_regex="\/note\/[0-9]+\/$")):
+            if link.text in ['展开', '[IMG]']:
+                continue
+            articles.append(OODict({'name': link.text, 'url': link.url}))
+        return articles
 
     def get_rooms(self):
         br = urlopen(self.url)
