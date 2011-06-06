@@ -1,22 +1,8 @@
-"""Web form authentication helper
 
-Example:
+"""A web crawler robot
 
-Edit your config file to suit the login form of your web site, like this:
+- Support custom login
 
-    {"action": "https://www.xxxx.com/login",
-    "username": "zhengchen",
-    "password": "*******",
-    "url": "https://www.xxx.com/index"}
-
-'url' is an example for additional informations required by server, you
-should put all of them here.
-And the code:
-
-    import auth
-    test = auth.AuthenticationHelper('test.auth')
-    test.login()
-    opener = test.get_opener()
 """
 
 import os
@@ -24,47 +10,36 @@ import urllib2
 import urllib
 import urlparse
 import cookielib
-import json
 
 
-def login():
-    return opener
+def login(action, post = None, post_data = None, login_response_event = None):
+    """ Login form support
+    There are two ways to pass the parameters, use either as you like:
 
-class AuthenticationHelper:
+    - post      Dict which contains all the information needed to login,
+                urllib.urlencode will be called on the dict for you
 
-    def __init__(self, config):
-        """ File 'config' is in json format, contains the informations about
-        the login form.
-        """
-        if not os.path.exists(config):
-            raise IOError('Config file required')
-        self.paras = json.load(open(config, 'r'))
+    - post_data  Encoded string like that captured by Firefox Liveheader
 
-        url = urlparse.urlparse(self.paras['action'])
-        tmp = url.netloc + os.path.join(url.path, 'cookie').replace('/', '.')
-        self.cookie_file = os.path.join(os.path.expanduser('~/.' + tmp))
+    A OpenerDirector is returned after the login action is performed,
+    you should check whether the login is really OK or not. We could provide
+    a callback function for this.
 
-        self.cj = cookielib.LWPCookieJar()
+    By default, cookie is not saved, so login is always needed.
+    """
+    #url = urlparse.urlparse(action)
+    #cookie_file = '.'.join(['.cookie', url.netloc.replace('/', '.')])
+    cj = cookielib.LWPCookieJar()
+    s = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), urllib2.HTTPSHandler)
+    s = None
+    if post:
+        page = s.open(action, urllib.urlencode(post))
+    if post_data:
+        page = s.open(action, urllib.quote(post_data))
 
-    def login(self):
-        """Perform the login and save cookies for further use """
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj), urllib2.HTTPSHandler)
-        page = opener.open(self.paras['action'], urllib.urlencode(self.paras))
-
-        # Fixme! Should detect if we're login ok
-        # if not self.check_login_callback():
-        #   return False
-
-        self.cj.save(self.cookie_file, ignore_discard = True, ignore_expires= True)
-        print 'Login ok'
-        return True
-
-    def get_opener(self):
-        """Return an urllib2.OpenerDirector object that you can play with"""
-        if not os.path.exists(self.cookie_file):
-            return None # Not login
-        self.cj.load(self.cookie_file, ignore_discard = True, ignore_expires= True)
-        return urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj), urllib2.HTTPSHandler)
+    #self.cj.save(self.cookie_file, ignore_discard = True, ignore_expires= True)
+    #self.cj.load(self.cookie_file, ignore_discard = True, ignore_expires= True)
+    return s
 
 if __name__ == '__main__':
     pass
