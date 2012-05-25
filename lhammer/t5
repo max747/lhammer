@@ -1,0 +1,5 @@
+<foo>
+    <bar name="hoge" id="fuga">150</bar>
+    <baz>200</baz>
+</foo>
+

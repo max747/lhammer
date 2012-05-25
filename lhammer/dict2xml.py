@@ -1,6 +1,6 @@
 """Transform dict to xml dom object
 
-values in 'attrs' are saved as attributes of node
+values in '_attrs_' are saved as attributes of node
 
 """
 from xml.dom.minidom import getDOMImplementation
@@ -20,16 +20,16 @@ def process(doc, tag, v):
         return process_simple(doc, tag, v)
 
     # Return a list of nodes with same tag
-    if isinstance(v, list): 
+    if isinstance(v, list):
         # Only care nodelist for list type, drop attrs
         return process_complex(doc, [(tag, x) for x in v])[0]
 
     # Create a new node, and insert all subnodes in dict to it
     if isinstance(v, dict):
-        node = doc.createElement(tag) 
+        node = doc.createElement(tag)
         nodelist, attrs = process_complex(doc, v.items())
         for child in nodelist:
-            node.appendChild(child) 
+            node.appendChild(child)
         for attr in attrs:
             node.setAttributeNode(attr)
         return node
@@ -45,12 +45,16 @@ def process_complex(doc, children):
     for tag, v in children:
         # If tag is attrs, all the nodes should be added to attrs
         # FIXME:Assume all values in attrs are simple values.
-        if tag == 'attrs':
+        if tag == '_attrs_':
             for attr_name, attr_value in v.items():
                 attr = doc.createAttribute(attr_name)
                 attr.nodeValue = attr_value
                 #attr.appendChild(doc.createTextNode(str(attr_value)))
                 attrs.append(attr)
+            continue
+        if tag == '_value_':
+            node = doc.createTextNode(str(v))
+            nodelist.append(node)
             continue
 
         nodes = process(doc, tag, v)
@@ -63,7 +67,7 @@ def process_simple(doc, tag, v):
     """For int, str
     Return node
     """
-    node = doc.createElement(tag) 
+    node = doc.createElement(tag)
     node.appendChild(doc.createTextNode(str(v)))
     return node
 

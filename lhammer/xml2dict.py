@@ -18,15 +18,16 @@ class XML2Dict:
         # Save value
         value = node.text
         if isinstance(value, str):
-            value = value.strip() # Only strip strings 
-        tree.value = value
+            value = value.strip() # Only strip strings
+        if value is not None and len(value) > 0:
+            tree._value_ = value
 
         # Save attributes
         attrs = {}
         for k,v in node.attrib.items():
             attrs.update(self._make_dict(k, v))
         if attrs:
-            tree['attrs'] = attrs
+            tree['_attrs_'] = attrs
 
         #Save childrens
         for child in node.getchildren():
@@ -40,14 +41,14 @@ class XML2Dict:
 
             old = tree[ctag]
             if not isinstance(old, list):
-                tree[ctag] = [old] # Multi entries, change to list       
+                tree[ctag] = [old] # Multi entries, change to list
             tree[ctag].append(ctree) # Add new entry
 
         return  tree
 
     def _make_dict(self, tag, value):
         """Generate a new dict with tag and value
-        
+
         If tag is like '{http://cs.sfsu.edu/csc867/myscheduler}patients',
         split it first to: http://cs.sfsu.edu/csc867/myscheduler, patients
         """
@@ -82,8 +83,11 @@ if __name__ == '__main__':
     r = xml.fromstring(s)
     from pprint import pprint
     pprint(r)
-    print r.result.count.value
-    print r.result.count.n
+    assert r.result.count._value_ == "10"
+    print r.result.count
+    assert r.result.count._attrs_.n == "1"
+    assert r.result.count.n == "1"
+    assert r.result.data[0].id == "491691"
     for data in r.result.data:
         print data.id, data.name
 
