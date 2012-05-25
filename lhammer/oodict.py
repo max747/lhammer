@@ -22,7 +22,7 @@ class OODict(dict):
     >>> a.c = 5
     >>> a
     {'a': 0, 'c': 5, 'b': 2, 'e': 0}
-    >>> a.f = OODict({'f':'f'}) 
+    >>> a.f = OODict({'f':'f'})
     >>> a
     {'a': 0, 'c': 5, 'b': 2, 'e': 0, 'f': {'f': 'f'}}
     >>> a.f.f
@@ -41,14 +41,14 @@ class OODict(dict):
     'e'
     >>> a['c']['e'].e
     'e'
-    
+
 
 
     Problems:
-    
+
     * can't use del a.c, must use a['c']
-    
-    *If a.k is a dict, v is returned still as a dict in the following code: 
+
+    *If a.k is a dict, v is returned still as a dict in the following code:
         for k, v in a.items():
             pass              # v is still a dict
 
@@ -70,9 +70,9 @@ class OODict(dict):
         if isinstance(value, dict) and not isinstance(value, OODict):
             # Fixme! There maybe a problem here when value is a subclass of dict
             value = OODict(value)
-            self[key] = value # Auto covert children dict to OODict 
+            self[key] = value # Auto covert children dict to OODict
         return value
-        
+
     def __getattr__(self, key):
         try:
             if key in self:
