@@ -64,8 +64,8 @@ class OODict(dict):
     def __getitem__(self, key):
         value = dict.__getitem__(self, key)
 
-        if isinstance(value, dict) and value.keys() == ['value']:
-            value = value['value']
+        if isinstance(value, dict) and value.keys() == ['_value_']:
+            value = value['_value_']
 
         if isinstance(value, dict) and not isinstance(value, OODict):
             # Fixme! There maybe a problem here when value is a subclass of dict
@@ -75,7 +75,10 @@ class OODict(dict):
         
     def __getattr__(self, key):
         try:
-            return self[key]
+            if key in self:
+                return self[key]
+            else:
+                return self['_attrs_'][key]
         except KeyError, err:
             raise AttributeError(err)
 

@@ -84,7 +84,10 @@ if __name__ == '__main__':
     from pprint import pprint
     pprint(r)
     assert r.result.count._value_ == "10"
+    print r.result.count
+    assert r.result.count._attrs_.n == "1"
     assert r.result.count.n == "1"
+    assert r.result.data[0].id == "491691"
     for data in r.result.data:
         print data.id, data.name
 
