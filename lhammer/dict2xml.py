@@ -1,6 +1,6 @@
 """Transform dict to xml dom object
 
-values in 'attrs' are saved as attributes of node
+values in '_attrs_' are saved as attributes of node
 
 """
 from xml.dom.minidom import getDOMImplementation
@@ -45,12 +45,16 @@ def process_complex(doc, children):
     for tag, v in children:
         # If tag is attrs, all the nodes should be added to attrs
         # FIXME:Assume all values in attrs are simple values.
-        if tag == 'attrs':
+        if tag == '_attrs_':
             for attr_name, attr_value in v.items():
                 attr = doc.createAttribute(attr_name)
                 attr.nodeValue = attr_value
                 #attr.appendChild(doc.createTextNode(str(attr_value)))
                 attrs.append(attr)
+            continue
+        if tag == '_value_':
+            node = doc.createTextNode(str(v))
+            nodelist.append(node)
             continue
 
         nodes = process(doc, tag, v)

@@ -18,15 +18,16 @@ class XML2Dict:
         # Save value
         value = node.text
         if isinstance(value, str):
-            value = value.strip() # Only strip strings 
-        tree.value = value
+            value = value.strip() # Only strip strings
+        if value is not None and len(value) > 0:
+            tree._value_ = value
 
         # Save attributes
         attrs = {}
         for k,v in node.attrib.items():
             attrs.update(self._make_dict(k, v))
         if attrs:
-            tree['attrs'] = attrs
+            tree['_attrs_'] = attrs
 
         #Save childrens
         for child in node.getchildren():
@@ -82,8 +83,8 @@ if __name__ == '__main__':
     r = xml.fromstring(s)
     from pprint import pprint
     pprint(r)
-    print r.result.count.value
-    print r.result.count.n
+    assert r.result.count._value_ == "10"
+    assert r.result.count.n == "1"
     for data in r.result.data:
         print data.id, data.name
 
