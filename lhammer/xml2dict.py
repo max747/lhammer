@@ -41,14 +41,14 @@ class XML2Dict:
 
             old = tree[ctag]
             if not isinstance(old, list):
-                tree[ctag] = [old] # Multi entries, change to list       
+                tree[ctag] = [old] # Multi entries, change to list
             tree[ctag].append(ctree) # Add new entry
 
         return  tree
 
     def _make_dict(self, tag, value):
         """Generate a new dict with tag and value
-        
+
         If tag is like '{http://cs.sfsu.edu/csc867/myscheduler}patients',
         split it first to: http://cs.sfsu.edu/csc867/myscheduler, patients
         """

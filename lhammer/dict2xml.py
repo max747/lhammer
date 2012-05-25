@@ -20,16 +20,16 @@ def process(doc, tag, v):
         return process_simple(doc, tag, v)
 
     # Return a list of nodes with same tag
-    if isinstance(v, list): 
+    if isinstance(v, list):
         # Only care nodelist for list type, drop attrs
         return process_complex(doc, [(tag, x) for x in v])[0]
 
     # Create a new node, and insert all subnodes in dict to it
     if isinstance(v, dict):
-        node = doc.createElement(tag) 
+        node = doc.createElement(tag)
         nodelist, attrs = process_complex(doc, v.items())
         for child in nodelist:
-            node.appendChild(child) 
+            node.appendChild(child)
         for attr in attrs:
             node.setAttributeNode(attr)
         return node
@@ -67,7 +67,7 @@ def process_simple(doc, tag, v):
     """For int, str
     Return node
     """
-    node = doc.createElement(tag) 
+    node = doc.createElement(tag)
     node.appendChild(doc.createTextNode(str(v)))
     return node
 
